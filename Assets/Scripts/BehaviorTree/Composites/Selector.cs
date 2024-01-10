@@ -12,7 +12,8 @@ public class Selector : Composite {
 
         bt.SetCurrentNode(this);
         foreach(Node node in ConnectedNodes) {
-            bt.SetLastTickedComposite(this);
+            if (BehaviorParent)
+                bt.SetLastTickedComposite(this);
             BehaviorTree.ExecutionResults Results = node.Execute(bt);
             if (Results == BehaviorTree.ExecutionResults.FAILURE)
                 continue;
@@ -30,7 +31,8 @@ public class Selector : Composite {
 
         bt.SetCurrentNode(this);
         foreach (Node node in ConnectedNodes) {
-            bt.SetLastTickedComposite(this);
+            if (BehaviorParent)
+                bt.SetLastTickedComposite(this);
             BehaviorTree.EvaluationResults Results = node.Evaluate(bt);
             if (Results == BehaviorTree.EvaluationResults.FAILURE)
                 continue;

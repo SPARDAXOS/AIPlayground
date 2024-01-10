@@ -13,6 +13,9 @@ public class Sequence : Composite {
 
         bt.SetCurrentNode(this);
         foreach (Node node in ConnectedNodes) {
+            if (BehaviorParent)
+                bt.SetLastTickedComposite(this);
+
             BehaviorTree.ExecutionResults Results = node.Execute(bt);
             if (Results == BehaviorTree.ExecutionResults.SUCCESS)
                 continue;
@@ -30,6 +33,9 @@ public class Sequence : Composite {
 
         bt.SetCurrentNode(this);
         foreach (Node node in ConnectedNodes) {
+            if (BehaviorParent)
+                bt.SetLastTickedComposite(this);
+
             BehaviorTree.EvaluationResults Results = node.Evaluate(bt);
             if (Results == BehaviorTree.EvaluationResults.SUCCESS)
                 continue;

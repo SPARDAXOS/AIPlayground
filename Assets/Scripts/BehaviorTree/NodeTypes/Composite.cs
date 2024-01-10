@@ -5,6 +5,7 @@ using UnityEngine;
 public abstract class Composite : Node {
 
     protected List<Node> ConnectedNodes = new List<Node>();
+    protected bool BehaviorParent = true;
 
 
     public virtual void ConnectNode(Node node) {
@@ -15,4 +16,5 @@ public abstract class Composite : Node {
 
         ConnectedNodes.Add(node);
     }
+    public void SetBehaviorParentState(bool state) { BehaviorParent = state; }
 }
