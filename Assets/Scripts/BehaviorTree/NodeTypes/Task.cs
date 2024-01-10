@@ -8,8 +8,8 @@ public abstract class Task : Node {
         RUNNING
     }
 
-    protected TaskStatus CurrentStatus = TaskStatus.NOT_RUNNING;
+    protected TaskStatus CurrentTaskStatus = TaskStatus.NOT_RUNNING;
 
     public abstract void Interrupt();
-    public TaskStatus GetStatus() { return CurrentStatus; }
+    public TaskStatus GetStatus() { return CurrentTaskStatus; }
 }

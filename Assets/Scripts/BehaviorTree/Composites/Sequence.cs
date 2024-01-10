@@ -12,6 +12,7 @@ public class Sequence : Composite {
         }
 
         bt.SetCurrentNode(this);
+
         foreach (Node node in ConnectedNodes) {
             if (BehaviorParent)
                 bt.SetLastTickedComposite(this);
@@ -32,6 +33,7 @@ public class Sequence : Composite {
         }
 
         bt.SetCurrentNode(this);
+
         foreach (Node node in ConnectedNodes) {
             if (BehaviorParent)
                 bt.SetLastTickedComposite(this);

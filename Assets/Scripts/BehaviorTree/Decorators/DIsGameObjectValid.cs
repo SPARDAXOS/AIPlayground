@@ -17,10 +17,18 @@ public class DIsGameObjectValid : Decorator {
         if (!BB.GetEntry(ObjectKey, out GameObject value))
             return BehaviorTree.EvaluationResults.ERROR;
 
-        if (value)
-            return BehaviorTree.EvaluationResults.SUCCESS;
-        else
-            return BehaviorTree.EvaluationResults.FAILURE;
+        if (CurrentSuccessCondition == SuccessCondition.IS_VALID) {
+            if (value)
+                return BehaviorTree.EvaluationResults.SUCCESS;
+            else
+                return BehaviorTree.EvaluationResults.FAILURE;
+        }
+        else {
+            if (value)
+                return BehaviorTree.EvaluationResults.FAILURE;
+            else
+                return BehaviorTree.EvaluationResults.SUCCESS;
+        }
     }
     public override BehaviorTree.ExecutionResults Execute(BehaviorTree bt) {
         Blackboard BB = bt.GetBlackboard();

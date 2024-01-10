@@ -32,7 +32,7 @@ public class BehaviorTree {
     private Composite CurrentLastTickedComposite = null;
 
     private float EvaluationFrequency = 0.2f;
-    private float ExecutionFrequency  = 0.1f;
+    private float ExecutionFrequency  = 0.01f;
 
     private float EvaluationTimer = 0.0f;
     private float ExecutionTimer  = 0.0f;
@@ -78,8 +78,10 @@ public class BehaviorTree {
             //  -Interrupt old task
             //  -Set new running task
 
+            if (CurrentRunningTask != null)
+                CurrentRunningTask.Interrupt();
 
-            CurrentRunningTask.Interrupt();
+            //CurrentRunningTask = (Task)CurrentNode;
             SetCurrentTask((Task)CurrentNode);
             Debug.Log("Running task was interrupted due to another task succeding in evaluation!");
         }
