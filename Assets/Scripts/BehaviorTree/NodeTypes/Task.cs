@@ -9,7 +9,9 @@ public abstract class Task : Node {
     }
 
     protected TaskStatus CurrentTaskStatus = TaskStatus.NOT_RUNNING;
+    protected string Name = "Task name unspecified!";
 
     public abstract void Interrupt();
     public TaskStatus GetStatus() { return CurrentTaskStatus; }
+    public string GetName() { return Name; }
 }

@@ -78,12 +78,14 @@ public class BehaviorTree {
             //  -Interrupt old task
             //  -Set new running task
 
-            if (CurrentRunningTask != null)
+            if (CurrentRunningTask != null) {
                 CurrentRunningTask.Interrupt();
+                Debug.Log("Running task was interrupted due to another task succeding in evaluation!");
+            }
 
-            //CurrentRunningTask = (Task)CurrentNode;
+            //This is kinda sus. Running task and running composite. It feels like its working by a fluke
             SetCurrentTask((Task)CurrentNode);
-            Debug.Log("Running task was interrupted due to another task succeding in evaluation!");
+            Debug.Log("New task started running - " + CurrentRunningTask.GetName());
         }
         else if (CurrentEvaluationResults == EvaluationResults.ERROR) {
 

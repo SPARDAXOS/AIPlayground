@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class TMoveTo : Task {
 
+    public TMoveTo() {
+        Name = "MoveToTarget";
+        Debug.Log("Ctor called on task - " + Name);
+    }
+
     private float DefaultSnapThreshold = 0.1f;
     private bool UseSnapThresholdKey = false;
 
@@ -25,7 +30,7 @@ public class TMoveTo : Task {
     public override BehaviorTree.ExecutionResults Execute(BehaviorTree bt) {
         if (CurrentTaskStatus == TaskStatus.NOT_RUNNING) {
             CurrentTaskStatus = TaskStatus.RUNNING;
-            bt.SetCurrentTaskName("Moving to target");
+            bt.SetCurrentTaskName("Moving to target"); //TODO: Move this responsibility to the behavior tree - Add getter for name from task!
         }
 
         bt.SetCurrentNode(this);
@@ -81,7 +86,6 @@ public class TMoveTo : Task {
 
         return false;
     }
-
 
     public void SetGameObjectKey(string key) { GameObjectKey = key; }
     public void SetSpeedKey(string key) { SpeedKey = key; }

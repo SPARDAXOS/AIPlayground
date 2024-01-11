@@ -35,7 +35,7 @@ public class Lumberjack : MonoBehaviour {
         else if (CurrentAIMode == AIMode.BT) {
             UpdateBlackboard();
             MainBehaviorTree.Update();
-            Debug.Log(MainBehaviorTree.GetCurrentTaskName());
+            //Debug.Log(MainBehaviorTree.GetCurrentTaskName());
         }
     }
     private void UpdateBlackboard() {
