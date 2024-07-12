@@ -7,12 +7,12 @@ using static State;
 
 public class StateMachine {
 
-    private List<State> states = new List<State>();
-
-    private GameObject owner = null;
-    private State currentState = null;
     private static uint stateIDCounter = 1;
 
+    //For ownership purposes
+    private GameObject owner = null; 
+    private State currentState = null;
+    private List<State> states = new List<State>();
 
 
     public void Initialize(GameObject owner) {
