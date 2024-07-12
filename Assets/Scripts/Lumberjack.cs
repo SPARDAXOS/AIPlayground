@@ -59,6 +59,8 @@ public class Lumberjack : MonoBehaviour {
         harvestState = new State_HarvestWood();
         gatherResourcesState = new State_GatherResources();
 
+
+        //Switch this out with BT style connections.
         waitState.SetTransitionState(State.StateType.MOVE_TO_TARGET);
         movingState.SetTransitionState(State.StateType.HARVEST_TREE);
         harvestState.SetTransitionState(State.StateType.GATHER_RESOURCES);
@@ -72,6 +74,7 @@ public class Lumberjack : MonoBehaviour {
         stateMachine.AddState(harvestState);
         stateMachine.AddState(gatherResourcesState);
 
+        //Some sort of function for starting state?
         stateMachine.TransitionToState(State.StateType.WAIT);
     }
     private void SetupBT() {
@@ -89,7 +92,7 @@ public class Lumberjack : MonoBehaviour {
         MoveToTask.SetSpeedKey("Speed");
         MoveToTask.SetTargetLocationKey("RoamTarget");
 
-        MainBehaviorTree.GetRoot().ConnectNode(RoamingSequence);
+        MainBehaviorTree.GetRoot().ConnectNode(RoamingSequence); //Do something more elegant
         RoamingSequence.ConnectNode(MoveToTask);
         RoamingSequence.ConnectNode(WaitTask);
     }

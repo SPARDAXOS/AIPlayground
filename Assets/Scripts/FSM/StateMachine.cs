@@ -1,7 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Xml;
 using UnityEngine;
 using static State;
 
@@ -13,6 +10,7 @@ public class StateMachine {
     private GameObject owner = null; 
     private State currentState = null;
     private List<State> states = new List<State>();
+
 
 
     public void Initialize(GameObject owner) {
@@ -46,6 +44,10 @@ public class StateMachine {
 
 
     public bool AddState(State state) {
+        StateMachine ownerStateMachine = state.GetStateMachine();
+        if (ownerStateMachine != null)
+            return false;
+
         if (DoesStateExist(state))
             return false;
 
