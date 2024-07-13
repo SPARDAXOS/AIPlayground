@@ -13,6 +13,7 @@ public abstract class State {
         GATHER_RESOURCES
     }
 
+    protected List<State> connectedStates = new List<State>();
     protected uint ID = 0;
     protected StateType type = StateType.NONE;
     protected StateType transitionStateType = StateType.NONE;
@@ -22,6 +23,18 @@ public abstract class State {
     protected Action onStartedCallback  = null;
     protected Action onUpdateCallback   = null;
     protected Action onFinishedCallback = null;
+
+
+    //API for state management
+    //Add
+    //Remove
+    //Find
+    //HasState
+    //Count
+    
+    //Switching to a state uses CanTransition virtual function that each state has to implement
+    //Also, priority is decided by which state is connected first. Index basically 0-X
+
 
 
     //Note: Look into how derived classes would go off this.
@@ -34,7 +47,10 @@ public abstract class State {
         initialized = true;
     }
     public abstract void Update();
-    public abstract bool ShouldTransition();
+
+    //Currently used for if current state should move to the single connected state
+    //Rework this to dectate if the current state can be transition into instead.
+    public abstract bool ShouldTransition(); 
 
     public void InvokeOnStartedCallback() { 
         onStartedCallback?.Invoke(); 
