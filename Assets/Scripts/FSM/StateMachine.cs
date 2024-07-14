@@ -4,11 +4,14 @@ using static State;
 
 public class StateMachine {
 
+    //Note: ID is primarily for faster look up.
     private static uint stateIDCounter = 1;
 
     //For ownership purposes
     private GameObject owner = null; 
     private State currentState = null;
+
+    private State entryState = null;
     private List<State> states = new List<State>();
 
 
@@ -43,6 +46,24 @@ public class StateMachine {
     }
 
 
+
+    public bool SetEntryState(State state) {
+        if (entryState != null)
+            return false;
+
+        entryState = state;
+        return true;
+    }
+    public bool ClearEntryState() {
+        if (entryState == null)
+            return false;
+
+        entryState = null;
+        return true;
+    }
+    public bool IsValid() {  return entryState != null; }
+
+    //This is kinda weird now.
     public bool AddState(State state) {
         StateMachine ownerStateMachine = state.GetStateMachine();
         if (ownerStateMachine != null)
@@ -56,6 +77,8 @@ public class StateMachine {
         stateIDCounter++;
         return true;
     }
+
+    //Can be used to trigger a hard transition to any registered state.
     public void TransitionToState(StateType type) {
         foreach (var item in states) {
             if (item.GetStateType() == type) {

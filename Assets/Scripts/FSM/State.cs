@@ -14,6 +14,8 @@ public abstract class State {
     }
 
     protected List<State> connectedStates = new List<State>();
+    protected string name = "Unnamed State";
+
     protected uint ID = 0;
     protected StateType type = StateType.NONE;
     protected StateType transitionStateType = StateType.NONE;
@@ -23,6 +25,49 @@ public abstract class State {
     protected Action onStartedCallback  = null;
     protected Action onUpdateCallback   = null;
     protected Action onFinishedCallback = null;
+
+
+    public bool Connect(State state) {
+        if (IsConnected(state))
+            return false;
+
+        connectedStates.Add(state);
+        return true;
+    }
+    public bool Disconnect(State state) {
+        if (!IsConnected(state))
+            return false;
+
+        connectedStates.Remove(state);
+        return true; 
+    }
+    public bool IsConnected(State state) {
+        if (connectedStates.Count == 0) 
+            return false;
+
+        return connectedStates.Contains(state); 
+    }
+
+    public string GetName() { return name; }
+    public void SetName(string name) {  this.name = name; } 
+    public int GetConnectedStatesCount() { return connectedStates.Count; }
+    public List<State> GetConnectedStates() {  return connectedStates; }
+
+
+
+    //Note: Also by ID?
+    public State FindState(string name) {
+        if (connectedStates.Count == 0)
+            return null;
+
+        foreach (State state in connectedStates) {
+            if (state.GetName() == name)
+                return state;
+        }
+
+        return null;
+    }
+
 
 
     //API for state management
