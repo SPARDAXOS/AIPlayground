@@ -12,6 +12,7 @@ public class StateMachine {
     private State currentState = null;
 
     private State entryState = null;
+    private bool valid = false;
     private List<State> states = new List<State>();
 
 
@@ -46,12 +47,30 @@ public class StateMachine {
     }
 
 
+    //Steps for the whole thing
+    //1. Connect states and form the structure of the machine.
+    //2. Select entry for the machine.
+    //3. Machine collects all states in the structure and caches them for access and other purposes.
+    //4. Initializes all states.
+    //5. Function for checking if a state exist in the machine or to set the current state of the machine are available then!+
 
-    public bool SetEntryState(State state) {
-        if (entryState != null)
+
+    //This function can directly take a list with optional argument being starting state! It checks if the starting state is within the list before succeding.
+    public bool SetEntryState(List<State> states, State startingState = null) {
+        if (valid || states.Count == 0)
             return false;
 
-        entryState = state;
+        if (startingState != null && !states.Contains(startingState))
+            return false;
+
+        this.states = states;
+
+        if (startingState != null)
+            entryState = startingState;
+        else
+            entryState = states[0];
+
+        valid = true;
         return true;
     }
     public bool ClearEntryState() {
@@ -61,7 +80,7 @@ public class StateMachine {
         entryState = null;
         return true;
     }
-    public bool IsValid() {  return entryState != null; }
+    public bool IsValid() {  return valid; }
 
     //This is kinda weird now.
     public bool AddState(State state) {
