@@ -15,11 +15,11 @@ public abstract class State {
 
     protected List<State> connectedStates = new List<State>();
     protected string name = "Unnamed State";
+    protected StateMachine parent = null;
 
     protected uint ID = 0;
     protected StateType type = StateType.NONE;
     protected StateType transitionStateType = StateType.NONE;
-    protected StateMachine parent = null;
     protected bool initialized = false;
 
     protected Action onStartedCallback  = null;

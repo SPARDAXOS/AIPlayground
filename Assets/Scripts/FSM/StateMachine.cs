@@ -91,16 +91,16 @@ public class StateMachine {
 
     //This is kinda weird now.
     public bool AddState(State state) {
-        StateMachine ownerStateMachine = state.GetOwner();
-        if (ownerStateMachine != null)
-            return false;
+        //StateMachine ownerStateMachine = state.GetOwner();
+        //if (ownerStateMachine != null)
+        //    return false;
 
-        if (DoesStateExist(state))
-            return false;
+        //if (DoesStateExist(state))
+        //    return false;
 
-        state.Initialize(this, stateIDCounter);
-        states.Add(state);
-        stateIDCounter++;
+        //state.Initialize(this, stateIDCounter);
+        //states.Add(state);
+        //stateIDCounter++;
         return true;
     }
 
@@ -121,14 +121,7 @@ public class StateMachine {
     public GameObject GetOwner() { return owner; }
     public State GetCurrentState() { return currentState; }
 
-    public bool DoesStateExist(State state) {
-        foreach (var item in states) {
-            if (item == state)
-                return true;
-        }
-        
-        return false;
-    }
+
     public bool DoesStateExist(uint id) {
         foreach (var item in states) {
             if (item.GetID() == id)
@@ -147,5 +140,36 @@ public class StateMachine {
         }
 
         return false;
+    }
+
+
+    public bool ContainsState(State state) {
+        //Use FindState here instead to reuse internal implementation.
+
+        foreach (var item in states) {
+            if (item == state)
+                return true;
+        }
+
+        return false;
+    }
+    public State FindState(string name) {
+
+
+        return null;
+    }
+    public List<State> FindStates(string name) {
+
+
+        return null;
+    }
+    public T FindState<T>() where T : State {
+
+        return null;
+    }
+    public List<T> FindStates<T>() where T : State {
+
+
+        return null;
     }
 }
