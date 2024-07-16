@@ -10,10 +10,9 @@ public class StateMachine {
     //For ownership purposes
     private GameObject owner = null; 
     private State currentState = null;
-
-    private State entryState = null;
-    private bool valid = false;
     private List<State> states = new List<State>();
+
+    private bool valid = false;
 
 
 
@@ -56,35 +55,43 @@ public class StateMachine {
 
 
     //This function can directly take a list with optional argument being starting state! It checks if the starting state is within the list before succeding.
-    public bool SetEntryState(List<State> states, State startingState = null) {
+    public bool Setup(List<State> structure, State startingState = null) {
         if (valid || states.Count == 0)
             return false;
 
         if (startingState != null && !states.Contains(startingState))
             return false;
 
-        this.states = states;
+        states = structure;
+        foreach (var state in states)
+            state.Possess(this);
 
         if (startingState != null)
-            entryState = startingState;
+            currentState = startingState;
         else
-            entryState = states[0];
+            currentState = states[0];
 
         valid = true;
         return true;
     }
-    public bool ClearEntryState() {
-        if (entryState == null)
+    public bool Clear() {
+        if (!valid)
             return false;
 
-        entryState = null;
+        foreach (var state in states)
+            state.Unpossess();
+        states.Clear();
+
+        currentState = null;
+        valid = false;
+
         return true;
     }
     public bool IsValid() {  return valid; }
 
     //This is kinda weird now.
     public bool AddState(State state) {
-        StateMachine ownerStateMachine = state.GetStateMachine();
+        StateMachine ownerStateMachine = state.GetOwner();
         if (ownerStateMachine != null)
             return false;
 

@@ -19,7 +19,7 @@ public abstract class State {
     protected uint ID = 0;
     protected StateType type = StateType.NONE;
     protected StateType transitionStateType = StateType.NONE;
-    protected StateMachine stateMachine = null;
+    protected StateMachine parent = null;
     protected bool initialized = false;
 
     protected Action onStartedCallback  = null;
@@ -46,6 +46,25 @@ public abstract class State {
             return false;
 
         return connectedStates.Contains(state); 
+    }
+    public bool Possess(StateMachine owner) {
+        if (parent != null) {
+            if (owner != parent)
+                Debug.LogWarning("Attempted to possess a state that is already owned by another state machine.");
+            else
+                Debug.LogWarning("State machine attempted to possess a state that is already possessed.");
+
+            return false;
+        }
+
+        parent = owner;
+        return true;
+    }
+    public void Unpossess() {
+        if (parent == null)
+            return;
+
+        parent = null;
     }
 
     public string GetName() { return name; }
@@ -88,7 +107,7 @@ public abstract class State {
             return;
 
         ID = id;
-        this.stateMachine = stateMachine;
+        this.parent = stateMachine;
         initialized = true;
     }
     public abstract void Update();
@@ -117,5 +136,5 @@ public abstract class State {
     public StateType GetTransitionStateType() { return transitionStateType; }
     public uint GetID() { return ID; }
     public StateType GetStateType() { return type; }
-    public StateMachine GetStateMachine() { return stateMachine; }
+    public StateMachine GetOwner() { return parent; }
 }
