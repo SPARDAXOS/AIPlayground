@@ -12,20 +12,22 @@ public sealed class State_MoveToTarget : State {
     private float snapDistance = 0.01f;
 
 
-    public override void Initialize(StateMachine stateMachine, uint id) {
-        base.Initialize(stateMachine, id);
-        type = StateType.MOVE_TO_TARGET;
-        targetGameObject = stateMachine.GetOwner();
-        currentPosition = targetGameObject.transform.position;
-    }
     public override void Update() {
         UpdatePosition();
     }
-    public override bool ShouldTransition() {
+    public override void Evaluate() {
         if (currentPosition == targetPosition)
-            return true;
-        return false;
+            return; //true
+        return; //false
     }
+    public override void EnterState() {
+        targetGameObject = parent.GetOwner();
+        currentPosition = targetGameObject.transform.position;
+    }
+    public override void ExitState() {
+
+    }
+
 
     private void UpdatePosition() {
         currentPosition = targetGameObject.transform.position;

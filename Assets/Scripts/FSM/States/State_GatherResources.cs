@@ -9,17 +9,8 @@ public class State_GatherResources : State {
     private State_MoveToTarget movingState = null;
     private GameObject currentTargetResource = null;
 
-    private bool finished = false;
 
 
-    public override void Initialize(StateMachine stateMachine, uint id) {
-        base.Initialize(stateMachine, id);
-        type = StateType.GATHER_RESOURCES;
-        //owner = stateMachine.GetOwner().GetComponent<Lumberjack>();
-
-        movingState = new State_MoveToTarget();
-        movingState.Initialize(stateMachine, id);
-    }
     public override void Update() {
         if (!currentTargetResource)
             DecideNextResourceToGather();
@@ -29,13 +20,14 @@ public class State_GatherResources : State {
             DecideNextResourceToGather();
         }
     }
-    public override bool ShouldTransition() {
-        if (finished) {
-            finished = false;
-            return true;
-        }
+    public override void Evaluate() {
+        //For each connected state.
+    }
+    public override void EnterState() {
 
-        return false;
+    }
+    public override void ExitState() {
+
     }
 
     private void DecideNextResourceToGather() {

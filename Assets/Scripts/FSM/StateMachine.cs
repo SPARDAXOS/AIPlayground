@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Xml.Linq;
 using UnityEngine;
 using static State;
 
@@ -20,29 +21,42 @@ public class StateMachine {
         this.owner = owner;
     }
     public void Update() {
-        if (currentState == null)
+        if (!valid)
             return;
 
         EvaluateCurrentState();
         UpdateCurrentState();
     }
     private void UpdateCurrentState() {
+        if (currentState == null)
+            return;
+
         currentState.Update();
         currentState.InvokeOnUpdateCallback();
     }
     private void EvaluateCurrentState() {
-        if (!currentState.ShouldTransition())
+        if (currentState == null)
             return;
 
-        currentState.InvokeOnFinishedCallback();
+        currentState.Evaluate();
+        if (currentState.ShouldTransition()) {
+            State nextState = currentState.GetTransitionTarget();
+            if (nextState == null) {
+                currentState.EnterState(); //Should reset the state.
+                currentState.InvokeOnEnterCallback();
+                return; //Any other clean up? Structure with 1 state is fine and should be supported.
+            }
 
-        StateType TransitionType = currentState.GetTransitionStateType();
-        if (TransitionType == StateType.NONE) {
-            Debug.LogError("State " + currentState.GetStateType().ToString() + " does not specify a transition state.");
-            return;
+            //Can reuse transition to state here. but it doesnt clean up much and adds 1 check if the state is contained in the state machine for extra protection in case the state got a new one connected to it after runniong the machine
+            currentState.ExitState();
+            currentState.InvokeOnExitCallback();
+
+            nextState.EnterState();
+            nextState.InvokeOnEnterCallback();
+            currentState = nextState;
         }
 
-        TransitionToState(TransitionType);
+        //TransitionToState(TransitionType);
     }
 
 
@@ -71,6 +85,10 @@ public class StateMachine {
         else
             currentState = states[0];
 
+        //Note probably should have a run function? idk. regardless if i keep these here then i need to do the exit ones in the clear? not sure.
+        currentState.EnterState();
+        currentState.InvokeOnEnterCallback();
+
         valid = true;
         return true;
     }
@@ -87,64 +105,46 @@ public class StateMachine {
 
         return true;
     }
-    public bool IsValid() {  return valid; }
 
-    //This is kinda weird now.
-    public bool AddState(State state) {
-        //StateMachine ownerStateMachine = state.GetOwner();
-        //if (ownerStateMachine != null)
-        //    return false;
 
-        //if (DoesStateExist(state))
-        //    return false;
 
-        //state.Initialize(this, stateIDCounter);
-        //states.Add(state);
-        //stateIDCounter++;
+    public bool TransitionToState(State state) {
+        if (!valid)
+            return false;
+
+        if (!ContainsState(state)) {
+            Debug.LogError("Unable to transition to state " + state.GetName() + "\n Reason: It does not exist in state machine.");
+            return false;
+        }
+
+        if (currentState == null)
+            currentState = state;
+        else {
+            currentState.ExitState();
+            currentState.InvokeOnExitCallback();
+            currentState = state;
+        }
+
+        currentState.EnterState();
+        currentState.InvokeOnEnterCallback();
         return true;
     }
 
-    //Can be used to trigger a hard transition to any registered state.
-    public void TransitionToState(StateType type) {
-        foreach (var item in states) {
-            if (item.GetStateType() == type) {
-                currentState = item;
-                currentState.InvokeOnStartedCallback();
-                return;
-            }
-        }
 
-        Debug.LogError("Unable to transition to state of type " + type.ToString() + "\n Reason: It does not exist in state machine.");
-    }
-
-
+    public bool IsValid() { return valid; }
     public GameObject GetOwner() { return owner; }
     public State GetCurrentState() { return currentState; }
 
 
-    public bool DoesStateExist(uint id) {
-        foreach (var item in states) {
-            if (item.GetID() == id)
-                return true;
-        }
-
-        return false;
-    }
-    public bool DoesStateExist(StateType type) {
-        if (type == StateType.NONE)
-            return false;
-
-        foreach (var item in states) {
-            if (item.GetStateType() == type)
-                return true;
-        }
-
-        return false;
-    }
 
 
+
+    /// <summary>
+    /// Does not reuse FindState(string) implementation. It performs full comparison to evaluate results not only name comparison.
+    /// </summary>
     public bool ContainsState(State state) {
-        //Use FindState here instead to reuse internal implementation.
+        if (!valid)
+            return false;
 
         foreach (var item in states) {
             if (item == state)
@@ -153,23 +153,56 @@ public class StateMachine {
 
         return false;
     }
-    public State FindState(string name) {
+    public bool ContainsState(string name) {
+        if (!valid)
+            return false;
 
+        return FindState(name) != null;
+    }
+    public State FindState(string name) {
+        if (!valid)
+            return null;
+
+        foreach (var item in states) {
+            if (item.GetName() == name)
+                return item;
+        }
 
         return null;
     }
     public List<State> FindStates(string name) {
+        if (!valid)
+            return null;
 
+        List<State> targets = new List<State>();
+        foreach (var item in states) {
+            if (item.GetName() == name)
+                targets.Add(item);
+        }
 
-        return null;
+        return targets;
     }
     public T FindState<T>() where T : State {
+        if (!valid)
+            return null;
+
+        foreach (var item in states) {
+            if (item.GetType() == typeof(T))
+                return (T)item;
+        }
 
         return null;
     }
     public List<T> FindStates<T>() where T : State {
+        if (!valid)
+            return null;
 
+        List<T> targets = new List<T>();
+        foreach (var item in states) {
+            if (item.GetType() == typeof(T))
+                targets.Add((T)item);
+        }
 
-        return null;
+        return targets;
     }
 }
