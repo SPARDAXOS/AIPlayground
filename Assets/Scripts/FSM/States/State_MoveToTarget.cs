@@ -13,16 +13,17 @@ public sealed class State_MoveToTarget : State {
 
 
     public override void Update() {
-        UpdatePosition();
+        if (targetGameObject)
+            UpdatePosition();
     }
     public override void Evaluate() {
-        if (currentPosition == targetPosition)
-            return; //true
-        return; //false
+        if (currentPosition == targetPosition) {
+            SetShouldTransition(true);
+            SetTransitionTarget()
+        }
     }
     public override void EnterState() {
         targetGameObject = parent.GetOwner();
-        currentPosition = targetGameObject.transform.position;
     }
     public override void ExitState() {
 
@@ -45,13 +46,8 @@ public sealed class State_MoveToTarget : State {
             targetGameObject.transform.position = currentPosition;
     }
 
-    public void SetTargetPosition(Vector3 targetPosition) {
-        this.targetPosition = targetPosition;
-    }
-    public void SetSpeed(float speed) {
-        this.speed = speed;
-    }
-    public void SetSnapDistance(float distance) {
-        snapDistance = distance;
-    }
+    public void SetTargetPosition(Vector3 targetPosition) { this.targetPosition = targetPosition; }
+    public void SetTargetGameObject(GameObject target) { targetGameObject = target; }
+    public void SetSpeed(float speed) { this.speed = speed; }
+    public void SetSnapDistance(float distance) { snapDistance = distance; }
 }

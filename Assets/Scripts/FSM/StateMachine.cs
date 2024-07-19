@@ -1,27 +1,25 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 using UnityEngine;
 using static State;
 
 public class StateMachine {
 
-    //Note: ID is primarily for faster look up.
-    private static uint stateIDCounter = 1;
-
-    //For ownership purposes
     private GameObject owner = null; 
     private State currentState = null;
+    private State entryState = null;
     private List<State> states = new List<State>();
 
     private bool valid = false;
-
+    private bool activated = false;
 
 
     public void Initialize(GameObject owner) {
         this.owner = owner;
     }
     public void Update() {
-        if (!valid)
+        if (!valid || !activated)
             return;
 
         EvaluateCurrentState();
@@ -59,6 +57,29 @@ public class StateMachine {
         //TransitionToState(TransitionType);
     }
 
+    public bool Activate() {
+        if (!valid || activated)
+            return false;
+
+        currentState = entryState;
+        currentState.EnterState();
+        currentState.InvokeOnEnterCallback();
+
+        activated = true;
+        return true;
+    }
+    public bool Deactivate() {
+        if (!valid || !activated)
+            return false;
+
+        currentState.ExitState();
+        currentState.InvokeOnExitCallback();
+        currentState = null;
+
+        activated = false;
+        return true;
+    }
+
 
     //Steps for the whole thing
     //1. Connect states and form the structure of the machine.
@@ -81,13 +102,9 @@ public class StateMachine {
             state.Possess(this);
 
         if (startingState != null)
-            currentState = startingState;
+            entryState = startingState;
         else
-            currentState = states[0];
-
-        //Note probably should have a run function? idk. regardless if i keep these here then i need to do the exit ones in the clear? not sure.
-        currentState.EnterState();
-        currentState.InvokeOnEnterCallback();
+            entryState = states[0];
 
         valid = true;
         return true;
@@ -100,6 +117,7 @@ public class StateMachine {
             state.Unpossess();
         states.Clear();
 
+        entryState = null;
         currentState = null;
         valid = false;
 
@@ -108,8 +126,8 @@ public class StateMachine {
 
 
 
-    public bool TransitionToState(State state) {
-        if (!valid)
+    public bool Transition(State state) {
+        if (!valid || !activated)
             return false;
 
         if (!ContainsState(state)) {
@@ -134,6 +152,7 @@ public class StateMachine {
     public bool IsValid() { return valid; }
     public GameObject GetOwner() { return owner; }
     public State GetCurrentState() { return currentState; }
+    public State GetEntryState() { return entryState; }
 
 
 
@@ -154,9 +173,6 @@ public class StateMachine {
         return false;
     }
     public bool ContainsState(string name) {
-        if (!valid)
-            return false;
-
         return FindState(name) != null;
     }
     public State FindState(string name) {
