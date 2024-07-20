@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 
 public sealed class State_MoveToTarget : State {
@@ -16,10 +17,17 @@ public sealed class State_MoveToTarget : State {
         if (targetGameObject)
             UpdatePosition();
     }
-    public override void Evaluate() {
-        if (currentPosition == targetPosition) {
-            SetShouldTransition(true);
-            SetTransitionTarget()
+    public override void EvaluateTransition() {
+        if (currentPosition != targetPosition) //This states condition.
+            return;
+
+        //Check the conditions of other states.
+        foreach (var item in connectedStates) {
+            if (item.EvaluateEntry()) {
+                SetShouldTransition(true);
+                SetTransitionTarget(item);
+                return;
+            }
         }
     }
     public override void EnterState() {

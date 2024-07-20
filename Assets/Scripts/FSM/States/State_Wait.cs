@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class State_Wait : State {
@@ -7,22 +8,29 @@ public class State_Wait : State {
     private float waitDuration = 2.0f;
     private float waitTimer = 0.0f;
 
-
-    public override void Initialize(StateMachine stateMachine, uint id) {
-        base.Initialize(stateMachine, id);
-        type = StateType.WAIT;
-        waitTimer = waitDuration;
-    }
     public override void Update() {
         UpdateTimer();
     }
-    public override bool ShouldTransition() {
-        if (waitTimer == 0.0f) {
-            waitTimer = waitDuration;
-            return true;
+    public override void EvaluateTransition() {
+        if (waitTimer != 0.0f) //This states condition.
+            return;
+
+        //Check the conditions of other states.
+        foreach (var item in connectedStates) {
+            if (item.EvaluateEntry()) {
+                SetShouldTransition(true);
+                SetTransitionTarget(item);
+                return;
+            }
         }
-        else
-            return false;
+    }
+    public override void EnterState() {
+        base.EnterState();
+        waitTimer = waitDuration;
+    }
+    public override void ExitState() {
+        base.ExitState();
+        waitTimer = waitDuration;
     }
 
 

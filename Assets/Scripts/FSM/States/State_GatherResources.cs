@@ -20,7 +20,7 @@ public class State_GatherResources : State {
             DecideNextResourceToGather();
         }
     }
-    public override void Evaluate() {
+    public override void EvaluateTransition() {
         //For each connected state.
     }
     public override void EnterState() {

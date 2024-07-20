@@ -74,7 +74,12 @@ public abstract class State {
     /// Called by state machine if state is the currently active state.
     /// Used for signaling to the state machine that a transition to another state is requested.
     /// </summary>
-    public abstract void Evaluate();
+    public abstract void EvaluateTransition();
+
+    /// <summary>
+    /// Called by parent state to check if transition into this state is possible.
+    /// </summary>
+    public virtual bool EvaluateEntry() { return true; }
 
     /// <summary>
     /// Called by state machine when state is entered.

@@ -36,7 +36,7 @@ public class StateMachine {
         if (currentState == null)
             return;
 
-        currentState.Evaluate();
+        currentState.EvaluateTransition();
         if (currentState.ShouldTransition()) {
             State nextState = currentState.GetTransitionTarget();
             if (nextState == null) {
@@ -81,28 +81,19 @@ public class StateMachine {
     }
 
 
-    //Steps for the whole thing
-    //1. Connect states and form the structure of the machine.
-    //2. Select entry for the machine.
-    //3. Machine collects all states in the structure and caches them for access and other purposes.
-    //4. Initializes all states.
-    //5. Function for checking if a state exist in the machine or to set the current state of the machine are available then!+
-
-
-    //This function can directly take a list with optional argument being starting state! It checks if the starting state is within the list before succeding.
-    public bool Setup(List<State> structure, State startingState = null) {
+    public bool Setup(List<State> structure, State entry = null) {
         if (valid || states.Count == 0)
             return false;
 
-        if (startingState != null && !states.Contains(startingState))
+        if (entry != null && !structure.Contains(entry))
             return false;
 
         states = structure;
         foreach (var state in states)
             state.Possess(this);
 
-        if (startingState != null)
-            entryState = startingState;
+        if (entry != null)
+            entryState = entry;
         else
             entryState = states[0];
 
@@ -123,9 +114,16 @@ public class StateMachine {
 
         return true;
     }
+    public bool SetStartingState(State entry) {
+        if (!valid)
+            return false;
 
+        if (!states.Contains(entry))
+            return false;
 
-
+        entryState = entry;
+        return true;
+    }
     public bool Transition(State state) {
         if (!valid || !activated)
             return false;
