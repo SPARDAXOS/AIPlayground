@@ -14,7 +14,9 @@ public class StateMachine {
     private bool valid = false;
     private bool activated = false;
 
-
+    /// <summary>
+    /// Must be called before using the state machine.
+    /// </summary>
     public void Initialize(GameObject owner) {
         this.owner = owner;
     }
@@ -57,6 +59,9 @@ public class StateMachine {
         //TransitionToState(TransitionType);
     }
 
+    /// <summary>
+    /// Enters the designated entry state and starts the state machine.
+    /// </summary>
     public bool Activate() {
         if (!valid || activated)
             return false;
@@ -68,6 +73,10 @@ public class StateMachine {
         activated = true;
         return true;
     }
+
+    /// <summary>
+    /// Exits the current running state if active and stops the state machine.
+    /// </summary>
     public bool Deactivate() {
         if (!valid || !activated)
             return false;
@@ -81,8 +90,11 @@ public class StateMachine {
     }
 
 
+    /// <summary>
+    /// Registers a state-structure to use in the state machine.
+    /// </summary>
     public bool Setup(List<State> structure, State entry = null) {
-        if (valid || states.Count == 0)
+        if (valid || states.Count == 0 || owner == null)
             return false;
 
         if (entry != null && !structure.Contains(entry))
@@ -100,6 +112,10 @@ public class StateMachine {
         valid = true;
         return true;
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
     public bool Clear() {
         if (!valid)
             return false;
