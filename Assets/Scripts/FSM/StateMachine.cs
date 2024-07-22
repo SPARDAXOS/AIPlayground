@@ -14,12 +14,87 @@ public class StateMachine {
     private bool valid = false;
     private bool activated = false;
 
+
+
+
+
     /// <summary>
-    /// Must be called before using the state machine.
+    /// Registers a state-structure to use in the state machine.
     /// </summary>
-    public void Initialize(GameObject owner) {
+    public bool Initialize(GameObject owner, List<State> structure, State entry = null) {
+        if (valid || states.Count == 0 || owner == null)
+            return false;
+
+        if (entry != null && !structure.Contains(entry))
+            return false;
+
         this.owner = owner;
+        states = structure;
+        foreach (var state in states)
+            state.Possess(this);
+
+        if (entry != null)
+            entryState = entry;
+        else
+            entryState = states[0];
+
+        valid = true;
+        return true;
     }
+
+    /// <summary>
+    /// Clears all data from the state machine and deactivates it if active.
+    /// </summary>
+    public bool Clear() {
+        if (!valid)
+            return false;
+
+        if (activated)
+            Deactivate();
+
+        foreach (var state in states)
+            state.Unpossess();
+        states.Clear();
+
+        entryState = null;
+        currentState = null;
+        owner = null;
+        valid = false;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Enters the designated entry state and starts the state machine.
+    /// </summary>
+    public bool Activate() {
+        if (!valid || activated)
+            return false;
+
+        currentState = entryState;
+        currentState.EnterState();
+        currentState.InvokeOnEnterCallback();
+
+        activated = true;
+        return true;
+    }
+
+    /// <summary>
+    /// Exits the current running state if active and stops the state machine.
+    /// </summary>
+    public bool Deactivate() {
+        if (!valid || !activated)
+            return false;
+
+        currentState.ExitState();
+        currentState.InvokeOnExitCallback();
+        currentState = null;
+
+        activated = false;
+        return true;
+    }
+
+
     public void Update() {
         if (!valid || !activated)
             return;
@@ -59,77 +134,8 @@ public class StateMachine {
         //TransitionToState(TransitionType);
     }
 
-    /// <summary>
-    /// Enters the designated entry state and starts the state machine.
-    /// </summary>
-    public bool Activate() {
-        if (!valid || activated)
-            return false;
-
-        currentState = entryState;
-        currentState.EnterState();
-        currentState.InvokeOnEnterCallback();
-
-        activated = true;
-        return true;
-    }
-
-    /// <summary>
-    /// Exits the current running state if active and stops the state machine.
-    /// </summary>
-    public bool Deactivate() {
-        if (!valid || !activated)
-            return false;
-
-        currentState.ExitState();
-        currentState.InvokeOnExitCallback();
-        currentState = null;
-
-        activated = false;
-        return true;
-    }
 
 
-    /// <summary>
-    /// Registers a state-structure to use in the state machine.
-    /// </summary>
-    public bool Setup(List<State> structure, State entry = null) {
-        if (valid || states.Count == 0 || owner == null)
-            return false;
-
-        if (entry != null && !structure.Contains(entry))
-            return false;
-
-        states = structure;
-        foreach (var state in states)
-            state.Possess(this);
-
-        if (entry != null)
-            entryState = entry;
-        else
-            entryState = states[0];
-
-        valid = true;
-        return true;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public bool Clear() {
-        if (!valid)
-            return false;
-
-        foreach (var state in states)
-            state.Unpossess();
-        states.Clear();
-
-        entryState = null;
-        currentState = null;
-        valid = false;
-
-        return true;
-    }
     public bool SetStartingState(State entry) {
         if (!valid)
             return false;
