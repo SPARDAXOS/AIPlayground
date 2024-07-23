@@ -15,9 +15,6 @@ public class StateMachine {
     private bool activated = false;
 
 
-
-
-
     /// <summary>
     /// Registers a state-structure to use in the state machine.
     /// </summary>
@@ -95,6 +92,9 @@ public class StateMachine {
     }
 
 
+    /// <summary>
+    /// Updates the current state in the state machine.
+    /// </summary>
     public void Update() {
         if (!valid || !activated)
             return;
@@ -133,19 +133,6 @@ public class StateMachine {
 
         //TransitionToState(TransitionType);
     }
-
-
-
-    public bool SetStartingState(State entry) {
-        if (!valid)
-            return false;
-
-        if (!states.Contains(entry))
-            return false;
-
-        entryState = entry;
-        return true;
-    }
     public bool Transition(State state) {
         if (!valid || !activated)
             return false;
@@ -167,15 +154,22 @@ public class StateMachine {
         currentState.InvokeOnEnterCallback();
         return true;
     }
+    public bool SetEntryState(State entry) {
+        if (!valid)
+            return false;
+
+        if (!states.Contains(entry))
+            return false;
+
+        entryState = entry;
+        return true;
+    }
 
 
     public bool IsValid() { return valid; }
     public GameObject GetOwner() { return owner; }
     public State GetCurrentState() { return currentState; }
     public State GetEntryState() { return entryState; }
-
-
-
 
 
     /// <summary>
