@@ -117,12 +117,11 @@ public class StateMachine {
         if (currentState.ShouldTransition()) {
             State nextState = currentState.GetTransitionTarget();
             if (nextState == null) {
-                currentState.EnterState(); //Should reset the state.
+                currentState.EnterState();
                 currentState.InvokeOnEnterCallback();
-                return; //Any other clean up? Structure with 1 state is fine and should be supported.
+                return;
             }
-
-            //Can reuse transition to state here. but it doesnt clean up much and adds 1 check if the state is contained in the state machine for extra protection in case the state got a new one connected to it after runniong the machine
+            //Can reuse transition function
             currentState.ExitState();
             currentState.InvokeOnExitCallback();
 
@@ -130,8 +129,6 @@ public class StateMachine {
             nextState.InvokeOnEnterCallback();
             currentState = nextState;
         }
-
-        //TransitionToState(TransitionType);
     }
     public bool Transition(State state) {
         if (!valid || !activated)
