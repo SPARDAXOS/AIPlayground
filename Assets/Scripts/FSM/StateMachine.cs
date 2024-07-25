@@ -121,7 +121,7 @@ public class StateMachine {
                 currentState.InvokeOnEnterCallback();
                 return;
             }
-            //Can reuse transition function
+            //Can reuse transition functiondfsdfds
             currentState.ExitState();
             currentState.InvokeOnExitCallback();
 
